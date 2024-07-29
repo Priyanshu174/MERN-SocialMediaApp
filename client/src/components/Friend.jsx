@@ -11,7 +11,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const navigate = useNavigate();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
+  const friends = useSelector((state) => state.user.friends) || [];
 
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
@@ -19,23 +19,29 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const isFriend = Array.isArray(friends) && friends.find((friend) => friend._id === friendId);
-
+  const isFriend = Array.isArray(friends) && friends.some((friend) => friend._id === friendId);
 
   const patchFriend = async () => {
     const API_URL = 'https://mern-socialmediaapp.onrender.com' || 'http://localhost:3001';
-    const response = await fetch(
-      `${API_URL}/users/${_id}/${friendId}`,
-      {
+
+    try {
+      const response = await fetch(`${API_URL}/users/${_id}/${friendId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const updatedFriends = await response.json();
+
+      // Update friends list in Redux
+      dispatch(setFriends({ friends: updatedFriends }));
+    } catch (error) {
+      console.error("Error updating friend list:", error);
+    }
   };
 
   return (
@@ -43,10 +49,8 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       <FlexBetween gap="1rem">
         <UserImage image={userPicturePath} size="55px" />
         <Box
-          onClick={() => {
-            navigate(`/profile/${friendId}`);
-            navigate(0);
-          }}
+          onClick={() => navigate(`/profile/${friendId}`)}
+          sx={{ cursor: "pointer" }}
         >
           <Typography
             color={main}
@@ -55,7 +59,6 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
             sx={{
               "&:hover": {
                 color: "#f5b14c",
-                cursor: "pointer",
               },
             }}
           >
