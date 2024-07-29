@@ -12,8 +12,10 @@ const FriendListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
 
   const getFriends = async () => {
+    const API_URL = 'https://mern-socialmediaapp.onrender.com' || 'http://localhost:3001';
+
     const response = await fetch(
-      `http://localhost:3001/users/${userId}/friends`,
+      `${API_URL}/users/${userId}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },

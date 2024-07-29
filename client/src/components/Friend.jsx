@@ -23,8 +23,9 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
 
   const patchFriend = async () => {
+    const API_URL = 'https://mern-socialmediaapp.onrender.com' || 'http://localhost:3001';
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
+      `${API_URL}/users/${_id}/${friendId}`,
       {
         method: "PATCH",
         headers: {

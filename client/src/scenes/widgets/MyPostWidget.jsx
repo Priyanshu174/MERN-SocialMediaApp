@@ -45,8 +45,9 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("picture", image);
       formData.append("picturePath", image.name);
     }
+    const API_URL = 'https://mern-socialmediaapp.onrender.com' || 'http://localhost:3001';
 
-    const response = await fetch(`http://localhost:3001/posts`, {
+    const response = await fetch(`${API_URL}/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
